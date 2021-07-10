@@ -1,0 +1,3 @@
+NeosRulezAssetSourceGoogleCloudStorage_FilePropertyCache:
+  frontend: Neos\Cache\Frontend\VariableFrontend
+  persistent: true

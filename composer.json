@@ -1,0 +1,19 @@
+{
+    "description": "Google Cloud Storage asset source for Neos CMS.",
+    "type": "neos-package",
+    "name": "neosrulez/assetsource-googlecloudstorage",
+    "require": {
+        "neos/neos": "*",
+        "google/cloud-storage": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "NeosRulez\\AssetSource\\GoogleCloudStorage\\": "Classes/"
+        }
+    },
+    "extra": {
+        "neos": {
+            "package-key": "NeosRulez.AssetSource.GoogleCloudStorage"
+        }
+    }
+}

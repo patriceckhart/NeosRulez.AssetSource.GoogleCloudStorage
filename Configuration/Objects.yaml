@@ -1,0 +1,9 @@
+NeosRulez\AssetSource\GoogleCloudStorage\Api\GoogleCloudStorageClient:
+  properties:
+    filePropertyCache:
+      object:
+        factoryObjectName: Neos\Flow\Cache\CacheManager
+        factoryMethodName: getCache
+        arguments:
+          1:
+            value: NeosRulezAssetSourceGoogleCloudStorage_FilePropertyCache
