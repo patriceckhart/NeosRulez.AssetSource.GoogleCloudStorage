@@ -167,8 +167,11 @@ final class GoogleCloudStorageClient
                 }
             }
 
-            $resultArray = $files;
-            $this->queryResults[$requestIdentifier] = $this->processResult($resultArray);
+            $offset = ($page - 1) * $pageSize;
+            $totalResults = count($files['files']);
+            $resultArray['files'] = array_splice($files['files'], $offset, $pageSize);
+
+            $this->queryResults[$requestIdentifier] = $this->processResult($resultArray, $totalResults);
         }
 
         return $this->queryResults[$requestIdentifier];
@@ -176,13 +179,14 @@ final class GoogleCloudStorageClient
 
     /**
      * @param array $resultArray
+     * @param int $totalResults
      * @return GoogleCloudStorageQueryResult
      * @throws \Neos\Cache\Exception
      */
-    protected function processResult(array $resultArray): GoogleCloudStorageQueryResult
+    protected function processResult(array $resultArray, int $totalResults): GoogleCloudStorageQueryResult
     {
         $files = $resultArray['files'] ?? [];
-        $totalResults = $resultArray['total_results'] ?? count($files);
+//        $totalResults = $resultArray['total_results'] ?? count($files);
 
         foreach ($files as $file) {
             if (isset($file['id'])) {
