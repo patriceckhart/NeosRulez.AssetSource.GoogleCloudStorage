@@ -10,3 +10,4 @@ Neos:
           name: 'Cloud Storage'
           defaultSearchTerm: ''
           signedUrlDuration: '60'
+          renderImageThumbs: false

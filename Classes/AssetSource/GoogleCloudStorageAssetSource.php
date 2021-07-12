@@ -59,7 +59,8 @@ final class GoogleCloudStorageAssetSource implements AssetSourceInterface
         $this->googleCloudStorageClient = new GoogleCloudStorageClient(
             $assetSourceOptions['privateKeyJsonPathAndFilename'],
             $assetSourceOptions['bucketName'],
-            $assetSourceOptions['signedUrlDuration']
+            $assetSourceOptions['signedUrlDuration'],
+            $assetSourceOptions['renderImageThumbs']
         );
         $this->defaultSearchTerm = trim($assetSourceOptions['defaultSearchTerm']) ?? '';
         $this->iconPath = trim($assetSourceOptions['icon']) ?? '';

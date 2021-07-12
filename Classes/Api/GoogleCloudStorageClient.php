@@ -31,6 +31,11 @@ final class GoogleCloudStorageClient
     private $signedUrlDuration;
 
     /**
+     * @var bool
+     */
+    private $renderImageThumbs;
+
+    /**
      * @var StorageClient
      */
     private $client;
@@ -50,12 +55,14 @@ final class GoogleCloudStorageClient
      * @param string $privateKeyJsonPathAndFilename
      * @param string $bucketName
      * @param string $signedUrlDuration
+     * @param bool $renderImageThumbs
      */
-    public function __construct(string $privateKeyJsonPathAndFilename, string $bucketName, string $signedUrlDuration)
+    public function __construct(string $privateKeyJsonPathAndFilename, string $bucketName, string $signedUrlDuration, bool $renderImageThumbs)
     {
         $this->privateKeyJsonPathAndFilename = $privateKeyJsonPathAndFilename;
         $this->bucketName = $bucketName;
         $this->signedUrlDuration = $signedUrlDuration;
+        $this->renderImageThumbs = $renderImageThumbs;
     }
 
     /**
@@ -127,31 +134,35 @@ final class GoogleCloudStorageClient
             $objects = $bucket->bucket($this->bucketName)->objects();
             $files = [];
             foreach ($objects as $object) {
-                $info = $object->info();
-                $stream = $object->downloadAsStream();
-                if($info['contentType'] == 'image/jpg' || $info['contentType'] == 'image/png') {
-                    $preview = 'data:image/jpg;base64, ' . rawurlencode(base64_encode($stream->getContents()));
-                } else {
-                    $preview = '/_Resources/Static/Packages/Neos.Media/IconSets/vivid/' . pathinfo($object->name())['extension'] . '.svg';
-                }
-                $item = [
-                    'id' => md5($object->name()),
-                    'url' => 'https://storage.googleapis.com/' . $this->bucketName . '/' . $object->name(),
-                    'identifier' => $info['id'],
-                    'size' => $info['size'],
-                    'contentType' => $info['contentType'],
-                    'mediaLink' => $info['mediaLink'],
-                    'preview' => $preview,
-                    'signedUrl' => $object->signedUrl(new \DateTime('+ ' . $this->signedUrlDuration . ' seconds'))
-                ];
-                if($query == '') {
-                    $files['files'][] = $item;
-                } else {
-                    $pos = strpos(strtolower($object->name()), strtolower($query));
-                    if ($pos === false) {
-
-                    } else {
+                if(array_key_exists('extension', pathinfo($object->name()))) {
+                    $info = $object->info();
+                    $ext = pathinfo($object->name())['extension'];
+                    $preview = '/_Resources/Static/Packages/Neos.Media/IconSets/vivid/' . strtolower($ext) . '.svg';
+                    if ($this->renderImageThumbs) {
+                        $stream = $object->downloadAsStream();
+                        if ($info['contentType'] == 'image/jpg' || $info['contentType'] == 'image/png') {
+                            $preview = 'data:image/jpg;base64, ' . rawurlencode(base64_encode($stream->getContents()));
+                        }
+                    }
+                    $item = [
+                        'id' => md5($object->name()),
+                        'url' => 'https://storage.googleapis.com/' . $this->bucketName . '/' . $object->name(),
+                        'identifier' => $info['id'],
+                        'size' => $info['size'],
+                        'contentType' => $info['contentType'],
+                        'mediaLink' => $info['mediaLink'],
+                        'preview' => $preview,
+                        'signedUrl' => $object->signedUrl(new \DateTime('+ ' . $this->signedUrlDuration . ' seconds'))
+                    ];
+                    if ($query == '') {
                         $files['files'][] = $item;
+                    } else {
+                        $pos = strpos(strtolower($object->name()), strtolower($query));
+                        if ($pos === false) {
+
+                        } else {
+                            $files['files'][] = $item;
+                        }
                     }
                 }
             }
