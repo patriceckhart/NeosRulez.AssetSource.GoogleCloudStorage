@@ -1,12 +1,12 @@
-Neos:
-  Media:
-    assetSources:
-      googleCloudStorage:
-        assetSource: 'NeosRulez\AssetSource\GoogleCloudStorage\AssetSource\GoogleCloudStorageAssetSource'
-        assetSourceOptions:
-          privateKeyJsonPathAndFilename: '/data/neos/Data/Secrets/secure-project-135623-6b390b76f8bb.json'
-          bucketName: 'your_bucketname'
-          icon: 'resource://NeosRulez.AssetSource.GoogleCloudStorage/Public/GoogleG.svg'
-          name: 'Cloud Storage'
-          defaultSearchTerm: ''
-          signedUrlDuration: '60'
+# Neos:
+#   Media:
+#     assetSources:
+#       googleCloudStorage:
+#         assetSource: 'NeosRulez\AssetSource\GoogleCloudStorage\AssetSource\GoogleCloudStorageAssetSource'
+#         assetSourceOptions:
+#           privateKeyJsonPathAndFilename: '/data/neos/Data/Secrets/secure-project-135623-6b390b76f8bb.json'
+#           bucketName: 'your_bucketname'
+#           icon: 'resource://NeosRulez.AssetSource.GoogleCloudStorage/Public/GoogleG.svg'
+#           name: 'Cloud Storage'
+#           defaultSearchTerm: ''
+#           signedUrlDuration: '60'
