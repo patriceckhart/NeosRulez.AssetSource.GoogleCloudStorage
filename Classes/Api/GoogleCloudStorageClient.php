@@ -139,9 +139,8 @@ final class GoogleCloudStorageClient
                     $ext = pathinfo($object->name())['extension'];
                     $preview = '/_Resources/Static/Packages/Neos.Media/IconSets/vivid/' . strtolower($ext) . '.svg';
                     if ($this->renderImageThumbs) {
-                        $stream = $object->downloadAsStream();
-                        if ($info['contentType'] == 'image/jpg' || $info['contentType'] == 'image/png') {
-                            $preview = 'data:image/jpg;base64, ' . rawurlencode(base64_encode($stream->getContents()));
+                        if ($info['contentType'] == 'image/jpg' || $info['contentType'] == 'image/jpeg' || $info['contentType'] == 'image/png') {
+                            $preview = $object->signedUrl(new \DateTime('+ ' . $this->signedUrlDuration . ' seconds'));
                         }
                     }
                     $item = [
@@ -186,7 +185,6 @@ final class GoogleCloudStorageClient
     protected function processResult(array $resultArray, int $totalResults): GoogleCloudStorageQueryResult
     {
         $files = $resultArray['files'] ?? [];
-//        $totalResults = $resultArray['total_results'] ?? count($files);
 
         foreach ($files as $file) {
             if (isset($file['id'])) {
