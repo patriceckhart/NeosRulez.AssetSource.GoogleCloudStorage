@@ -131,7 +131,33 @@ final class GoogleCloudStorageClient
         if (!isset($this->queryResults[$requestIdentifier])) {
 
             $bucket = $this->getClient();
+
+            $startOffset = ($page - 1) * $pageSize;
+            $endOffset = $pageSize;
+
             $objects = $bucket->bucket($this->bucketName)->objects();
+            $results = [];
+            $slicedObjects = [];
+            $count = 0;
+            foreach ($objects as $item) {
+                $count = $count + 1;
+                $slicedObjects[] = $item;
+            }
+
+            if($type == 'search') {
+                $count = 0;
+                foreach ($objects as $object) {
+                    $name = strtolower($object->name());
+                    $pos = strpos($name, strtolower($query));
+                    if ($pos !== false) {
+                        $results[] = $object;
+                        $count = $count + 1;
+                    }
+                }
+            }
+
+            $objects = array_slice(!empty($results) ? $results : $slicedObjects, $startOffset, $endOffset);
+
             $files = [];
             foreach ($objects as $object) {
                 if(array_key_exists('extension', pathinfo($object->name()))) {
@@ -166,11 +192,7 @@ final class GoogleCloudStorageClient
                 }
             }
 
-            $offset = ($page - 1) * $pageSize;
-            $totalResults = count($files['files']);
-            $resultArray['files'] = array_splice($files['files'], $offset, $pageSize);
-
-            $this->queryResults[$requestIdentifier] = $this->processResult($resultArray, $totalResults);
+            $this->queryResults[$requestIdentifier] = $this->processResult($files, $count);
         }
 
         return $this->queryResults[$requestIdentifier];
